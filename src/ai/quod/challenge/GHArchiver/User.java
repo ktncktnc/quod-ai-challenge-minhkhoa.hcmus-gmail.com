@@ -1,4 +1,4 @@
-package ai.quod.challenge.GHProject;
+package ai.quod.challenge.GHArchiver;
 
 import java.util.Objects;
 

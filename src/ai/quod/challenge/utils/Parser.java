@@ -1,9 +1,13 @@
 package ai.quod.challenge.utils;
 
-import ai.quod.challenge.GHProject.*;
-import ai.quod.challenge.GHProject.payload.*;
-import ai.quod.challenge.GHProject.payload.pull.PullRequest;
-import ai.quod.challenge.GHProject.payload.push.Commit;
+import ai.quod.challenge.GHArchiver.Event;
+import ai.quod.challenge.GHArchiver.RepoInfo;
+import ai.quod.challenge.GHArchiver.User;
+import ai.quod.challenge.GHArchiver.payload.*;
+import ai.quod.challenge.GHProject.Issue;
+import ai.quod.challenge.GHProject.PullRequest;
+import ai.quod.challenge.GHProject.Commit;
+import ai.quod.challenge.GHProject.Push;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -12,12 +16,14 @@ import java.util.ArrayList;
 
 public class Parser {
 
-
     public static Event parse(String data){
         JSONObject jsonObject = new JSONObject(data);
 
         long id = Long.parseLong(jsonObject.getString("id"));
         Event.Type type = Event.getEventType(jsonObject.getString("type"));
+
+        if (type == null)
+            System.out.println("type = " + jsonObject.getString("type"));
 
         boolean isPublic = jsonObject.getBoolean("public");
         LocalDateTime createdAt = Utils.timeStringToLocalDateTime(jsonObject.getString("created_at"));
@@ -27,13 +33,9 @@ public class Parser {
         JSONObject payloadJson = jsonObject.getJSONObject("payload");
 
         User actor = parseActor(actorJson);
-        Repo repo = parseRepo(repoJson);
-        Payload payLoad = parsePayload(payloadJson, type);
+        RepoInfo repoInfo = parseRepo(repoJson);
 
-        System.out.println(payLoad);
-
-        return new Event(id, type, actor, repo, payLoad, isPublic, createdAt);
-
+        return new Event(id, type, actor, repoInfo, payloadJson, isPublic, createdAt);
     }
 
     public static User parseActor(JSONObject data){
@@ -43,37 +45,20 @@ public class Parser {
         return new User(id, username);
     }
 
-    public static Repo parseRepo(JSONObject data){
+    public static RepoInfo parseRepo(JSONObject data){
         long id = data.getLong("id");
         String name = data.getString("name");
         String url = data.getString("url");
 
-        return new Repo(id, name, url);
+        return new RepoInfo(id, name, url);
     }
 
-    public static Payload parsePayload(JSONObject payloadJson, Event.Type type){
-        Payload payLoad = null;
-        switch (type){
-            case PushEvent:
-                payLoad = parsePushPayload(payloadJson);
-                break;
-            case CreateEvent:
-                payLoad = parseCreatePayload(payloadJson);
-                break;
-            case DeleteEvent:
-                payLoad = parseDeletePayload(payloadJson);
-                break;
-            case PullRequestEvent:
-                payLoad = parsePullPayload(payloadJson);
-                break;
-        }
+    //Push-------------
 
-        return payLoad;
-    }
-
-    public static PushPayload parsePushPayload(JSONObject payload){
+    public static Push parsePush(JSONObject payload){
         long id = payload.getLong("push_id");
         int size = payload.getInt("size");
+        String ref = payload.getString("ref");
         ArrayList<Commit> commits = new ArrayList<>();
 
         JSONArray commitsJson = payload.getJSONArray("commits");
@@ -82,10 +67,10 @@ public class Parser {
             JSONObject commitJson = commitsJson.getJSONObject(i);
 
             Commit commit = parseCommit(commitJson);
-            if (commit != null) commits.add(commit);
+            commits.add(commit);
         }
 
-        return new PushPayload(id, size, commits);
+        return new Push(id, size, ref, commits);
     }
 
     public static Commit parseCommit(JSONObject commit){
@@ -94,27 +79,36 @@ public class Parser {
         return new Commit(sha, message);
     }
 
-    public static CreatePayload parseCreatePayload(JSONObject payload){
-        String ref = payload.getString("ref");
+//    //Create------------
+
+    public static CreatePayload parseCreate(JSONObject payload){
+        String ref = null;
+        if (!payload.isNull("ref"))
+            ref = payload.getString("ref");
+
         CreatePayload.Type type = CreatePayload.getEventType(payload.getString("ref_type"));
         String masterBranch = payload.getString("master_branch");
 
         return new CreatePayload(ref, type, masterBranch);
     }
 
-    public static DeletePayload parseDeletePayload(JSONObject payload){
+    //Create------------
+
+    public static DeletePayload parseDelete(JSONObject payload){
         String ref = payload.getString("ref");
         DeletePayload.Type type = DeletePayload.getEventType(payload.getString("ref_type"));
 
         return new DeletePayload(ref, type);
     }
 
-    public static PullPayload parsePullPayload(JSONObject payload){
-        PullPayload.Type type = PullPayload.getPullType(payload.getString("action"));
+    //Pull--------------
+
+    public static PullRequestPayload parsePull(JSONObject payload){
+        PullRequestPayload.Type type = PullRequestPayload.getPullType(payload.getString("action"));
         int number = payload.getInt("number");
         PullRequest request = parsePullRequest(payload.getJSONObject("pull_request"));
 
-        return new PullPayload(type, number, request);
+        return new PullRequestPayload(type, number, request);
     }
 
     public static PullRequest parsePullRequest(JSONObject jsonObject){
@@ -123,6 +117,43 @@ public class Parser {
         boolean locked = jsonObject.getBoolean("locked");
 
         return new PullRequest(id, locked, number);
+    }
+
+    //Issue-------------
+
+    public static IssuePayload parseIssuePayload(JSONObject payload){
+        IssuePayload.Type type = IssuePayload.getType(payload.getString("action"));
+        Issue issue = parseIssue(payload.getJSONObject("issue"));
+
+        return new IssuePayload(type, issue);
+    }
+
+    public static Issue parseIssue(JSONObject jsonObject){
+        long id = jsonObject.getLong("id");
+        int number = jsonObject.getInt("number");
+        LocalDateTime createdAt = Utils.timeStringToLocalDateTime(jsonObject.getString("created_at"));
+        LocalDateTime closedAt = null;
+
+        if (! jsonObject.isNull("closed_at"))
+            closedAt = Utils.timeStringToLocalDateTime(jsonObject.getString("closed_at"));
+
+        return new Issue(id, number, createdAt, closedAt);
+    }
+
+    //Member------------
+
+    public static MemberPayload parseMemberEvent(JSONObject payload){
+        MemberPayload.Type type = MemberPayload.getType(payload.getString("action"));
+        User user = parseUser(payload.getJSONObject("member"));
+
+        return new MemberPayload(type, user);
+    }
+
+    public static User parseUser(JSONObject jsonObject){
+        long id = jsonObject.getLong("id");
+        String username = jsonObject.getString("login");
+
+        return new User(id, username);
     }
 
 }

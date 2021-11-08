@@ -1,4 +1,4 @@
-package ai.quod.challenge.GHProject.payload.push;
+package ai.quod.challenge.GHProject;
 
 public class Commit {
     String sha;
