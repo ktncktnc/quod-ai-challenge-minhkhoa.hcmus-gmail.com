@@ -1,10 +1,10 @@
-package ai.quod.challenge.GHProject.payload;
+package ai.quod.challenge.GHArchiver.payload;
 
-import ai.quod.challenge.GHProject.payload.pull.PullRequest;
+import ai.quod.challenge.GHProject.PullRequest;
 
 import java.util.HashMap;
 
-public class PullPayload extends Payload{
+public class PullRequestPayload extends Payload{
     public enum Type {
         Opened, Closed
     }
@@ -22,7 +22,7 @@ public class PullPayload extends Payload{
     int number;
     PullRequest request;
 
-    public PullPayload(Type type, int number, PullRequest request) {
+    public PullRequestPayload(Type type, int number, PullRequest request) {
         this.type = type;
         this.number = number;
         this.request = request;
@@ -33,7 +33,7 @@ public class PullPayload extends Payload{
     }
 
     public static void setPullTypes(HashMap<String, Type> pullTypes) {
-        PullPayload.pullTypes = pullTypes;
+        PullRequestPayload.pullTypes = pullTypes;
     }
 
     public Type getType() {

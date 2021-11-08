@@ -6,3 +6,17 @@
 /dataSources.local.xml
 # Editor-based HTTP Client requests
 /httpRequests/
+
+../download
+../out
+
+../ai.iml
+/description.html
+/encodings.xml
+/misc.xml
+/modules.xml
+/libraries/org_json_json_20210307.xml
+/project-template.xml
+/uiDesigner.xml
+/vcs.xml
+/inspectionProfiles/Project_Default.xml

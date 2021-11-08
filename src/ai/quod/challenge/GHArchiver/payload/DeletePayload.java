@@ -1,8 +1,8 @@
-package ai.quod.challenge.GHProject.payload;
+package ai.quod.challenge.GHArchiver.payload;
 
 import java.util.HashMap;
 
-public class CreatePayload extends Payload {
+public class DeletePayload extends Payload {
     public enum Type {
         Branch, Repository
     }
@@ -18,12 +18,10 @@ public class CreatePayload extends Payload {
 
     String ref;
     Type refType;
-    String masterBranch;
 
-    public CreatePayload(String ref, Type refType, String masterBranch) {
+    public DeletePayload(String ref, Type refType) {
         this.ref = ref;
         this.refType = refType;
-        this.masterBranch = masterBranch;
     }
 
     public static HashMap<String, Type> getCreateTypes() {
@@ -31,7 +29,7 @@ public class CreatePayload extends Payload {
     }
 
     public static void setCreateTypes(HashMap<String, Type> createTypes) {
-        CreatePayload.createTypes = createTypes;
+        DeletePayload.createTypes = createTypes;
     }
 
     public String getRef() {
@@ -50,20 +48,11 @@ public class CreatePayload extends Payload {
         this.refType = refType;
     }
 
-    public String getMasterBranch() {
-        return masterBranch;
-    }
-
-    public void setMasterBranch(String masterBranch) {
-        this.masterBranch = masterBranch;
-    }
-
     @Override
     public String toString() {
-        return "CreatePayLoad{" +
+        return "DeletePayload{" +
                 "ref='" + ref + '\'' +
                 ", refType=" + refType +
-                ", masterBranch='" + masterBranch + '\'' +
                 '}';
     }
 }

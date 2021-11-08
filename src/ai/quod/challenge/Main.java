@@ -1,5 +1,7 @@
 package ai.quod.challenge;
 
+import ai.quod.challenge.GHArchiver.Archiver;
+import ai.quod.challenge.GHProject.Database;
 import ai.quod.challenge.utils.Parser;
 import ai.quod.challenge.utils.Utils;
 
@@ -21,13 +23,10 @@ public class Main {
 
         //Utils.unzipGzFile(gzFileName, jsonFilePath);
 
-        try (Stream<String> stream = Files.lines(Paths.get(jsonFilePath))) {
-            Parser.parse(stream.findFirst().get());
-
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
+        Archiver archiver = new Archiver();
+        archiver.fromFile(jsonFilePath);
+        System.out.println("archiver = " + archiver);
+        System.out.println("db size = " + Database.getInstance().repositories.size());
 
     }
 }
