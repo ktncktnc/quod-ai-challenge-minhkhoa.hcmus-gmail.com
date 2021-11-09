@@ -1,4 +1,4 @@
-package ai.quod.challenge.utils;
+package ai.quod.challenge.Utils;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -13,6 +13,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.zip.GZIPInputStream;
 
 public class Utils {
+    public static final float EPSILON = 0.00001f;
 
     /**
      * @param url: url of file
