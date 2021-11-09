@@ -1,11 +1,10 @@
 package ai.quod.challenge.GHArchiver;
 
-import ai.quod.challenge.utils.Parser;
+import ai.quod.challenge.Utils.Parser;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class Archiver {

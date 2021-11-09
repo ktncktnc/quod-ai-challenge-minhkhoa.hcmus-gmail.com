@@ -1,10 +1,12 @@
 package ai.quod.challenge.GHProject;
 
 import ai.quod.challenge.GHArchiver.User;
+import ai.quod.challenge.Metrics.PullMetric;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Repository {
     public long id;
@@ -22,7 +24,7 @@ public class Repository {
 
     public LocalDateTime createdAt;
 
-    public Repository(long id, LocalDateTime time) {
+    public Repository(long id, LocalDateTime time, User actor) {
         this.id = id;
         this.createdAt = time;
 
@@ -36,6 +38,8 @@ public class Repository {
 
         branches = new ArrayList<>();
         devs = new HashMap<>();
+
+        devs.put(actor.getId(), actor);
     }
 
     public void addPush(Push push){
@@ -56,16 +60,25 @@ public class Repository {
         openedPullRequests.put(pullRequest.id, pullRequest);
     }
 
-    public void closePullRequest(long id){
-        closedPullRequests.put(id, openedPullRequests.remove(id));
+    public void closePullRequest(long id, LocalDateTime time){
+        PullRequest pullRequest = openedPullRequests.remove(id);
+
+        if (pullRequest != null){
+            pullRequest.setClosed(time);
+            closedPullRequests.put(id, pullRequest);
+        }
     }
 
     public void openIssue(Issue issue){
         opendedIssues.put(issue.id, issue);
     }
 
-    public void closeIssue(Long id){
-        closedIssues.put(id, opendedIssues.remove(id));
+    public void closeIssue(Long id, LocalDateTime closedTime){
+        Issue issue = opendedIssues.remove(id);
+        if (issue != null){
+            issue.setClosedAt(closedTime);
+            closedIssues.put(id, issue);
+        }
     }
 
     public void addDev(User dev){
@@ -74,5 +87,19 @@ public class Repository {
 
     public void removeDev(long id){
         devs.remove(id);
+    }
+    
+    public int totalCommits(){
+        int size = 0;
+
+        for(Map.Entry<Long, Push> entry : pushes.entrySet()){
+            size += entry.getValue().commitSize();
+        }
+
+        return size;
+    }
+
+    public int totalDevs(){
+        return devs.size();
     }
 }

@@ -7,14 +7,20 @@ import java.time.LocalDateTime;
 public class Issue extends Payload {
     long id;
     int number;
+    boolean isOpen;
     LocalDateTime createdAt;
     LocalDateTime closedAt;
 
-    public Issue(long id, int number, LocalDateTime createdAt, LocalDateTime closedAt) {
+    public Issue(long id, int number){
         this.id = id;
         this.number = number;
+    }
+
+    public Issue(long id, int number, LocalDateTime createdAt) {
+        this.id = id;
+        this.number = number;
+        isOpen = true;
         this.createdAt = createdAt;
-        this.closedAt = closedAt;
     }
 
     public long getId() {

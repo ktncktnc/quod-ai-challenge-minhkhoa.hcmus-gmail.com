@@ -38,4 +38,52 @@ public class PullRequest {
     public boolean getIsOpen(){
         return this.isOpen;
     }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+    }
+
+    public boolean isOpen() {
+        return isOpen;
+    }
+
+    public void setOpen(boolean open) {
+        isOpen = open;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
+    public LocalDateTime getOpenedTime() {
+        return openedTime;
+    }
+
+    public void setOpenedTime(LocalDateTime openedTime) {
+        this.openedTime = openedTime;
+    }
+
+    public LocalDateTime getClosedTime() {
+        return closedTime;
+    }
+
+    public void setClosedTime(LocalDateTime closedTime) {
+        this.closedTime = closedTime;
+    }
 }

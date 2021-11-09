@@ -5,13 +5,13 @@ import ai.quod.challenge.GHProject.Database;
 import ai.quod.challenge.GHProject.PullRequest;
 import ai.quod.challenge.GHProject.Push;
 import ai.quod.challenge.GHProject.Repository;
-import ai.quod.challenge.utils.Parser;
+import ai.quod.challenge.Utils.Parser;
 import org.json.JSONObject;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 
-public class Event {
+public class    Event {
     public enum Type {
         PushEvent, CreateEvent, DeleteEvent, PullRequestEvent, IssuesEvent, WatchEvent, ForkEvent,
         PullRequestReviewCommentEvent, PullRequestReviewEvent, IssueCommentEvent, GollumEvent, ReleaseEvent,
@@ -141,16 +141,22 @@ public class Event {
         }
     }
 
-    private Repository getRepositoryFromDB(){
+    private Repository getRepositoryFromDBIfNull(){
         long repoID = getRepoID();
         Database database = Database.getInstance();
-        return database.getRepo(repoID, time);
+        Repository repository = database.getRepo(repoID);
+
+        if (repository == null){
+            repository = Database.getInstance().createAndGetRepo(getRepoID(), time, actor);
+        }
+
+        return repository;
     }
 
     private void handlePushEvent(){
-        Repository repository = getRepositoryFromDB();
+        Repository repository = getRepositoryFromDBIfNull();
 
-        Push push = Parser.parsePush(getPayLoad());
+        Push push = Parser.parsePush(getPayLoad(), getTime());
         repository.addPush(push);
     }
 
@@ -158,10 +164,11 @@ public class Event {
         CreatePayload create = Parser.parseCreate(getPayLoad());
 
         if (create.getRefType() == CreatePayload.Type.Repository){
-            Database.getInstance().createRepo(getRepoID(), time);
+            Database.getInstance().createRepo(getRepoID(), time, actor);
         }
         else if (create.getRefType() == CreatePayload.Type.Branch){
-            Repository repository = getRepositoryFromDB();
+            Repository repository = getRepositoryFromDBIfNull();
+
             repository.addBranch(create.getRef());
         }
     }
@@ -173,13 +180,13 @@ public class Event {
             Database.getInstance().deleteRepo(getRepoID());
         }
         else if (delete.getRefType() == DeletePayload.Type.Branch){
-            Repository repository = getRepositoryFromDB();
+            Repository repository = getRepositoryFromDBIfNull();
             repository.removeBranch(delete.getRef());
         }
     }
 
     private void handlePullRequestEvent(){
-        Repository repository = getRepositoryFromDB();
+        Repository repository = getRepositoryFromDBIfNull();
         PullRequestPayload pull = Parser.parsePull(getPayLoad());
 
         if (pull.getType() == PullRequestPayload.Type.Opened){
@@ -188,24 +195,24 @@ public class Event {
             repository.openPullRequest(request);
         }
         else if (pull.getType() == PullRequestPayload.Type.Closed){
-            repository.closePullRequest(pull.getRequest().id);
+            repository.closePullRequest(pull.getRequest().id, getTime());
         }
     }
 
     private void handleIssuesEvent(){
-        Repository repository = getRepositoryFromDB();
+        Repository repository = getRepositoryFromDBIfNull();
         IssuePayload issue = Parser.parseIssuePayload(getPayLoad());
 
         if (issue.getType() == IssuePayload.Type.Opened){
             repository.openIssue(issue.getIssue());
         }
         else if (issue.getType() == IssuePayload.Type.Closed){
-            repository.closeIssue(issue.getIssue().getId());
+            repository.closeIssue(issue.getIssue().getId(), getTime());
         }
     }
 
     private void handleMemberEvent(){
-        Repository repository = getRepositoryFromDB();
+        Repository repository = getRepositoryFromDBIfNull();
 
         MemberPayload member = Parser.parseMemberEvent(getPayLoad());
 

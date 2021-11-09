@@ -1,4 +1,4 @@
-package ai.quod.challenge.utils;
+package ai.quod.challenge.Utils;
 
 import ai.quod.challenge.GHArchiver.Event;
 import ai.quod.challenge.GHArchiver.RepoInfo;
@@ -55,7 +55,7 @@ public class Parser {
 
     //Push-------------
 
-    public static Push parsePush(JSONObject payload){
+    public static Push parsePush(JSONObject payload, LocalDateTime time){
         long id = payload.getLong("push_id");
         int size = payload.getInt("size");
         String ref = payload.getString("ref");
@@ -70,7 +70,7 @@ public class Parser {
             commits.add(commit);
         }
 
-        return new Push(id, size, ref, commits);
+        return new Push(id, size, ref, commits, time);
     }
 
     public static Commit parseCommit(JSONObject commit){
@@ -137,7 +137,7 @@ public class Parser {
         if (! jsonObject.isNull("closed_at"))
             closedAt = Utils.timeStringToLocalDateTime(jsonObject.getString("closed_at"));
 
-        return new Issue(id, number, createdAt, closedAt);
+        return new Issue(id, number, createdAt);
     }
 
     //Member------------
