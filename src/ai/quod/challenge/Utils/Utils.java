@@ -4,32 +4,39 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 
 public class Utils {
     public static final float EPSILON = 0.00001f;
 
     /**
-     * @param url: url of file
+     * @param urlStr: url of file
      * @param path: path to save
      * @return:
      * long: -1: error
      *      >= 0: status of Files.copy func
      */
-    public static long downloadFile(String url, String path){
-        try (InputStream in = URI.create(url).toURL().openStream()){
+    public static long downloadFile(String urlStr, String path) throws Exception{
+        try {
+            URL url = new URL(urlStr);
+            URLConnection urlc = url.openConnection();
+            urlc.setRequestProperty("User-Agent", "Mozilla 5.0 (Windows; U; "
+                    + "Windows NT 5.1; en-US; rv:1.8.0.11) ");
+            InputStream in = urlc.getInputStream();
             return Files.copy(in, Paths.get(path));
         }
         catch (Exception e){
-            e.printStackTrace();
+            throw e;
         }
-        return -1;
     }
 
     /**
@@ -79,5 +86,23 @@ public class Utils {
                 .withZone(ZoneId.of("UTC"));
         LocalDateTime date = LocalDateTime.parse(time, formatter);
         return date;
+    }
+
+    public static ArrayList<String> fileNamesFromTimeRange(LocalDateTime start, LocalDateTime end){
+        ArrayList<String> fileNames = new ArrayList<>();
+
+        LocalDateTime currentTime = start;
+        while(currentTime.isBefore(end)){
+            String fileName = String.format(FileHandler.fileName_format,
+                    currentTime.getYear(),
+                    currentTime.getMonth().getValue(),
+                    currentTime.getDayOfMonth(),
+                    currentTime.getHour());
+
+            fileNames.add(fileName);
+            currentTime = currentTime.plusHours(1);
+        }
+
+        return fileNames;
     }
 }
