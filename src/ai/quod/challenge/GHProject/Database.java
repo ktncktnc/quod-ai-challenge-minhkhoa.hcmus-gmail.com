@@ -1,5 +1,6 @@
 package ai.quod.challenge.GHProject;
 
+import ai.quod.challenge.GHArchiver.RepoInfo;
 import ai.quod.challenge.GHArchiver.User;
 
 import java.time.LocalDateTime;
@@ -23,12 +24,12 @@ public class Database {
         return repositories.get(repoID);
     }
 
-    public void createRepo(long repoID, LocalDateTime time, User actor){
-        repositories.put(repoID, new Repository(repoID, time, actor));
+    public void createRepo(long repoID, LocalDateTime time, RepoInfo info, User actor){
+        repositories.put(repoID, new Repository(repoID, time, info, actor));
     }
 
-    public Repository createAndGetRepo(long repoID, LocalDateTime time, User actor){
-        Repository repository = new Repository(repoID, time, actor);
+    public Repository createAndGetRepo(long repoID, LocalDateTime time, RepoInfo repo, User actor){
+        Repository repository = new Repository(repoID, time, repo, actor);
         repositories.put(repoID, repository);
 
         return repository;

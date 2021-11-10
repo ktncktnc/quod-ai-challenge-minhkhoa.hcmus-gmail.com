@@ -1,5 +1,6 @@
 package ai.quod.challenge.GHProject;
 
+import ai.quod.challenge.GHArchiver.RepoInfo;
 import ai.quod.challenge.GHArchiver.User;
 import ai.quod.challenge.Metrics.PullMetric;
 
@@ -10,6 +11,8 @@ import java.util.Map;
 
 public class Repository {
     public long id;
+
+    public RepoInfo info;
 
     public HashMap<Long, User> devs;
     public HashMap<Long, Push> pushes;
@@ -24,9 +27,10 @@ public class Repository {
 
     public LocalDateTime createdAt;
 
-    public Repository(long id, LocalDateTime time, User actor) {
+    public Repository(long id, LocalDateTime time, RepoInfo info, User actor) {
         this.id = id;
         this.createdAt = time;
+        this.info = info;
 
         pushes = new HashMap<>();
 

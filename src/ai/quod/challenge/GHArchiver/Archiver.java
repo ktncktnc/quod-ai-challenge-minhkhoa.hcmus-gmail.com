@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.stream.Stream;
 
 public class Archiver {
-    HashMap<Long, Event> events;
+    public HashMap<Long, Event> events;
 
     public Archiver() {
         events = new HashMap<>();

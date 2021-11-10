@@ -147,7 +147,7 @@ public class    Event {
         Repository repository = database.getRepo(repoID);
 
         if (repository == null){
-            repository = Database.getInstance().createAndGetRepo(getRepoID(), time, actor);
+            repository = Database.getInstance().createAndGetRepo(getRepoID(), time, repoInfo, actor);
         }
 
         return repository;
@@ -164,7 +164,7 @@ public class    Event {
         CreatePayload create = Parser.parseCreate(getPayLoad());
 
         if (create.getRefType() == CreatePayload.Type.Repository){
-            Database.getInstance().createRepo(getRepoID(), time, actor);
+            Database.getInstance().createRepo(getRepoID(), time, repoInfo, actor);
         }
         else if (create.getRefType() == CreatePayload.Type.Branch){
             Repository repository = getRepositoryFromDBIfNull();
