@@ -4,6 +4,7 @@ import ai.quod.challenge.GHArchiver.Archiver;
 import ai.quod.challenge.GHProject.Database;
 import ai.quod.challenge.GHProject.Repository;
 import ai.quod.challenge.Metrics.CommitMetric;
+import ai.quod.challenge.Metrics.HealthMetrics;
 import ai.quod.challenge.Metrics.IssueMetric;
 import ai.quod.challenge.Metrics.PullMetric;
 import ai.quod.challenge.Utils.FileHandler;
@@ -40,6 +41,7 @@ public class HealthScoreCalculator {
         for(String jsonFile : jsonFiles){
             System.out.println("parsing file " + jsonFile);
             archiver.fromFile(jsonFile);
+            archiver.events.clear();
         }
 
         System.out.println("archiver = " + archiver);
@@ -51,8 +53,13 @@ public class HealthScoreCalculator {
 
         CommitMetric.processData(7);
 
+
         IssueMetric.processData();
-        //System.out.println("pull" + IssueMetric.averageClosedTime);
+        PullMetric.processData();
+
+        HealthMetrics.process();
+
+        FileHandler.scoresToCsv(HealthMetrics.sortToList(), FileHandler.output_name);
 
     }
 }

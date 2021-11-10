@@ -10,10 +10,13 @@ import java.util.Map;
 
 public class CommitMetric {
     public static HashMap<Long, Integer> totalCommits = new HashMap<>();
+
     public static HashMap<Long, Float> commitsPerDay = new HashMap<>();
     public static HashMap<Long, Float> commitsPerDev = new HashMap<>();
 
     public static int maxCommitsCount = 0;
+    public static int minCommitsCount = 1000000000;
+
     public static float maxCommitsPerDay = 0.0f;
     public static float maxCommitsPerDev = 0.0f;
 
@@ -24,6 +27,8 @@ public class CommitMetric {
             int count = entry.getValue().totalCommits();
             if (count > maxCommitsCount)
                 maxCommitsCount = count;
+            if (count < minCommitsCount)
+                minCommitsCount = count;
 
             totalCommits.put(entry.getKey(), count);
 
@@ -42,8 +47,6 @@ public class CommitMetric {
                 maxCommitsPerDev = perDev;
         }
     }
-
-
 
 
 }

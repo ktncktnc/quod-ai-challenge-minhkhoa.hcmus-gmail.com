@@ -1,5 +1,7 @@
 package ai.quod.challenge.Utils;
 
+import ai.quod.challenge.GHArchiver.HealthScore;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -105,4 +107,10 @@ public class Utils {
 
         return fileNames;
     }
+
+    public static String orgNameFromRepoName(String repo){
+        int index = repo.indexOf("/");
+        return repo.substring(0, index);
+    }
+
 }
