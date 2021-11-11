@@ -60,6 +60,7 @@ public class Issue extends Payload {
         return "Issue{" +
                 "id=" + id +
                 ", number=" + number +
+                ", isOpen=" + isOpen +
                 ", createdAt=" + createdAt +
                 ", closedAt=" + closedAt +
                 '}';

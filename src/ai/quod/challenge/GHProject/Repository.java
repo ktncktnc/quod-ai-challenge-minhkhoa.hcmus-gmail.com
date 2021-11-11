@@ -106,4 +106,20 @@ public class Repository {
     public int totalDevs(){
         return devs.size();
     }
+
+    @Override
+    public String toString() {
+        return "Repository{" +
+                "id=" + id +
+                ", info=" + info +
+                ", devs=" + devs +
+                ", pushes=" + pushes +
+                ", opendedIssues=" + opendedIssues +
+                ", closedIssues=" + closedIssues +
+                ", openedPullRequests=" + openedPullRequests +
+                ", closedPullRequests=" + closedPullRequests +
+                ", branches=" + branches +
+                ", createdAt=" + createdAt +
+                '}';
+    }
 }

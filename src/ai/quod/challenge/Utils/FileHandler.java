@@ -18,6 +18,7 @@ public class FileHandler {
     public static final String data_url = "https://data.gharchive.org/";
 
     public static final String download_path = home_path + "\\download\\";
+    public static final String db_path = home_path + "\\db\\";
     public static final String output_path = home_path + "\\output\\";
     public static final String output_name = output_path + "health_scores.csv";
 
@@ -75,7 +76,7 @@ public class FileHandler {
 
                 //Get repo
                 long id = healthScore.id;
-                Repository repository = Database.getInstance().getRepo(id);
+                Repository repository = Database.getInstance().fromID(id);
 
                 //Get org and repo names
                 String name = repository.info.getName();

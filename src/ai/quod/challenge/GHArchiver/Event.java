@@ -144,7 +144,7 @@ public class    Event {
     private Repository getRepositoryFromDBIfNull(){
         long repoID = getRepoID();
         Database database = Database.getInstance();
-        Repository repository = database.getRepo(repoID);
+        Repository repository = database.fromID(repoID);
 
         if (repository == null){
             repository = Database.getInstance().createAndGetRepo(getRepoID(), time, repoInfo, actor);
@@ -158,6 +158,8 @@ public class    Event {
 
         Push push = Parser.parsePush(getPayLoad(), getTime());
         repository.addPush(push);
+
+        Database.getInstance().saveRepositoryToFile(repository);
     }
 
     private void handleCreateEvent(){
@@ -170,7 +172,9 @@ public class    Event {
             Repository repository = getRepositoryFromDBIfNull();
 
             repository.addBranch(create.getRef());
+            Database.getInstance().saveRepositoryToFile(repository);
         }
+
     }
 
     private void handleDeleteEvent(){
@@ -182,6 +186,8 @@ public class    Event {
         else if (delete.getRefType() == DeletePayload.Type.Branch){
             Repository repository = getRepositoryFromDBIfNull();
             repository.removeBranch(delete.getRef());
+
+            Database.getInstance().saveRepositoryToFile(repository);
         }
     }
 
@@ -197,6 +203,8 @@ public class    Event {
         else if (pull.getType() == PullRequestPayload.Type.Closed){
             repository.closePullRequest(pull.getRequest().id, getTime());
         }
+
+        Database.getInstance().saveRepositoryToFile(repository);
     }
 
     private void handleIssuesEvent(){
@@ -209,6 +217,8 @@ public class    Event {
         else if (issue.getType() == IssuePayload.Type.Closed){
             repository.closeIssue(issue.getIssue().getId(), getTime());
         }
+
+        Database.getInstance().saveRepositoryToFile(repository);
     }
 
     private void handleMemberEvent(){
@@ -219,5 +229,7 @@ public class    Event {
         if(member.getAction() == MemberPayload.Type.Added){
             repository.addDev(member.getMember());
         }
+
+        Database.getInstance().saveRepositoryToFile(repository);
     }
 }

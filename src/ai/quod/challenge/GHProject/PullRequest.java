@@ -86,4 +86,16 @@ public class PullRequest {
     public void setClosedTime(LocalDateTime closedTime) {
         this.closedTime = closedTime;
     }
+
+    @Override
+    public String toString() {
+        return "PullRequest{" +
+                "id=" + id +
+                ", locked=" + locked +
+                ", isOpen=" + isOpen +
+                ", number=" + number +
+                ", openedTime=" + openedTime +
+                ", closedTime=" + closedTime +
+                '}';
+    }
 }

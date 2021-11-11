@@ -6,6 +6,7 @@ import ai.quod.challenge.Utils.Utils;
 
 import javax.rmi.CORBA.Util;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 public class CommitMetric {
@@ -21,27 +22,29 @@ public class CommitMetric {
     public static float maxCommitsPerDev = 0.0f;
 
     public static void processData(int totalDays){
-        HashMap<Long, Repository> repositories = Database.getInstance().repositories;
+        HashSet<Long> repositories = Database.getInstance().repoIds;
 
-        for(Map.Entry<Long, Repository> entry : repositories.entrySet()){
-            int count = entry.getValue().totalCommits();
+        for(Long repoID : repositories){
+            Repository repository = Database.getInstance().fromID(repoID);
+            int count = repository.totalCommits();
+
             if (count > maxCommitsCount)
                 maxCommitsCount = count;
             if (count < minCommitsCount)
                 minCommitsCount = count;
 
-            totalCommits.put(entry.getKey(), count);
+            totalCommits.put(repoID, count);
 
             //Per days
             float perDay = (float)count/(float)totalDays;
-            commitsPerDay.put(entry.getKey(), perDay);
+            commitsPerDay.put(repoID, perDay);
 
             if (perDay - maxCommitsPerDay > Utils.EPSILON)
                 maxCommitsPerDay = perDay;
 
             //Per devs
-            float perDev = (float)count/(float)entry.getValue().totalDevs();
-            commitsPerDev.put(entry.getKey(), perDev);
+            float perDev = (float)count/(float)repository.totalDevs();
+            commitsPerDev.put(repoID, perDev);
 
             if (perDev - maxCommitsPerDev > Utils.EPSILON)
                 maxCommitsPerDev = perDev;

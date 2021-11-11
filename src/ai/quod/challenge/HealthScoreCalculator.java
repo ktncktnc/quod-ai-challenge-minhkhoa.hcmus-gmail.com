@@ -43,17 +43,7 @@ public class HealthScoreCalculator {
             archiver.fromFile(jsonFile);
             archiver.events.clear();
         }
-
-        System.out.println("archiver = " + archiver);
-        System.out.println("db size = " + Database.getInstance().repositories.size());
-
-        Repository repository = Database.getInstance().getRepo(423173519);
-        if (repository != null)
-        System.out.println("push size = " + repository.pushes.size());
-
         CommitMetric.processData(7);
-
-
         IssueMetric.processData();
         PullMetric.processData();
 

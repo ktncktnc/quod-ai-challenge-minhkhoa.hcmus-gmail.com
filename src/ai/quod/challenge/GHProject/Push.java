@@ -23,10 +23,12 @@ public class Push {
 
     @Override
     public String toString() {
-        return "PushPayload{" +
+        return "Push{" +
                 "id=" + id +
                 ", size=" + size +
                 ", commits=" + commits +
+                ", ref='" + ref + '\'' +
+                ", time=" + time +
                 '}';
     }
 

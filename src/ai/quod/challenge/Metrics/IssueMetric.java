@@ -7,6 +7,7 @@ import ai.quod.challenge.GHProject.Repository;
 
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 public class IssueMetric {
@@ -17,14 +18,15 @@ public class IssueMetric {
     private static float maximumClosedTime = -1f;
 
     public static void processData(){
-        HashMap<Long, Repository> repositories = Database.getInstance().repositories;
+        HashSet<Long> repositories = Database.getInstance().repoIds;
 
-        for(Map.Entry<Long, Repository> entry : repositories.entrySet()){
-            Repository repository = entry.getValue();
+        for(Long repoID : repositories){
+            Repository repository = Database.getInstance().fromID(repoID);
+
             int totalPull = repository.closedIssues.size() + repository.opendedIssues.size();
 
             if (totalPull == 0){
-                averageClosedTime.put(entry.getKey(), 0.0f);
+                averageClosedTime.put(repoID, 0.0f);
                 continue;
             }
 
@@ -43,7 +45,7 @@ public class IssueMetric {
                 else if (time > maximumClosedTime)
                     maximumClosedTime = time;
             }
-            averageClosedTime.put(entry.getKey(), time);
+            averageClosedTime.put(repoID, time);
         }
 
         calculateScores();

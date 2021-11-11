@@ -10,18 +10,18 @@ public class HealthMetrics {
     public static HashMap<Long, HealthScore> healthScores = new HashMap<>();
 
     public static void process(){
-        HashMap<Long, Repository> repositories = Database.getInstance().repositories;
+        HashSet<Long> repositories = Database.getInstance().repoIds;
 
-        for(Map.Entry<Long, Repository> entry : repositories.entrySet()){
-            long id = entry.getValue().id;
+        for(Long repoID : repositories){
+            Repository repository = Database.getInstance().fromID(repoID);
 
-            float commitsPerDay = CommitMetric.commitsPerDay.get(id)/CommitMetric.maxCommitsPerDay;
-            float commitsPerDev = CommitMetric.commitsPerDev.get(id)/CommitMetric.maxCommitsPerDev;
-            float averageMergedTime = PullMetric.pullScores.get(id);
-            float averageClosedTime = IssueMetric.issueScores.get(id);
+            float commitsPerDay = CommitMetric.commitsPerDay.get(repoID)/CommitMetric.maxCommitsPerDay;
+            float commitsPerDev = CommitMetric.commitsPerDev.get(repoID)/CommitMetric.maxCommitsPerDev;
+            float averageMergedTime = PullMetric.pullScores.get(repoID);
+            float averageClosedTime = IssueMetric.issueScores.get(repoID);
 
-            HealthScore healthScore = new HealthScore(id, commitsPerDay, commitsPerDev, averageMergedTime, averageClosedTime);
-            healthScores.put(id, healthScore);
+            HealthScore healthScore = new HealthScore(repoID, commitsPerDay, commitsPerDev, averageMergedTime, averageClosedTime);
+            healthScores.put(repoID, healthScore);
         }
     }
 

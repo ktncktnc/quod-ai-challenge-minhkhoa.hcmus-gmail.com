@@ -5,10 +5,7 @@ import ai.quod.challenge.GHProject.PullRequest;
 import ai.quod.challenge.GHProject.Repository;
 
 import java.time.Duration;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class PullMetric {
     public static HashMap<Long, Float> averageMergedTime = new HashMap<>();
@@ -18,13 +15,14 @@ public class PullMetric {
     private static float maxMergedTime = -1f;
 
     public static void processData(){
-        HashMap<Long, Repository> repositories = Database.getInstance().repositories;
+        HashSet<Long> repositories = Database.getInstance().repoIds;
 
-        for(Map.Entry<Long, Repository> entry : repositories.entrySet()){
-            Repository repository = entry.getValue();
+        for(Long repoID : repositories){
+            Repository repository = Database.getInstance().fromID(repoID);
+
             int totalPull = repository.closedPullRequests.size() + repository.openedPullRequests.size();
             if (totalPull == 0){
-                averageMergedTime.put(entry.getKey(), 0.0f);
+                averageMergedTime.put(repoID, 0.0f);
                 continue;
             }
 
@@ -44,7 +42,7 @@ public class PullMetric {
 
             }
 
-            averageMergedTime.put(entry.getKey(), time);
+            averageMergedTime.put(repoID, time);
         }
 
         calculateScores();
