@@ -1,4 +1,4 @@
-#HealthScoreCalculator 
+# HealthScoreCalculator 
 ## Dependencies
 While developing project, I used some external libraries, include:
 - `gson`: used to convert object to json and from json to object.
