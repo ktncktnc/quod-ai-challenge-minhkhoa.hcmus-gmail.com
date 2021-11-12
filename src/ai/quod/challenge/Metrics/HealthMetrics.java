@@ -13,7 +13,7 @@ public class HealthMetrics {
         HashSet<Long> repositories = Database.getInstance().repoIds;
 
         for(Long repoID : repositories){
-            Repository repository = Database.getInstance().fromID(repoID);
+            Repository repository = Database.getInstance().get(repoID);
 
             float commitsPerDay = CommitMetric.commitsPerDay.get(repoID)/CommitMetric.maxCommitsPerDay;
             float commitsPerDev = CommitMetric.commitsPerDev.get(repoID)/CommitMetric.maxCommitsPerDev;

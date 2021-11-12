@@ -32,6 +32,8 @@ public class HealthScoreCalculator {
             return;
         }
 
+        Database.getInstance().connect();
+
         ArrayList<String> fileNames = Utils.fileNamesFromTimeRange(start, end);
 
         ArrayList<String> jsonFiles = FileHandler.processInputFiles(fileNames);
@@ -50,6 +52,8 @@ public class HealthScoreCalculator {
         HealthMetrics.process();
 
         FileHandler.scoresToCsv(HealthMetrics.sortToList(), FileHandler.output_name);
+
+        Database.getInstance().close();
 
     }
 }

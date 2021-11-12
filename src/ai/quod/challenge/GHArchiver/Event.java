@@ -144,10 +144,11 @@ public class    Event {
     private Repository getRepositoryFromDBIfNull(){
         long repoID = getRepoID();
         Database database = Database.getInstance();
-        Repository repository = database.fromID(repoID);
+
+        Repository repository = database.get(repoID);
 
         if (repository == null){
-            repository = Database.getInstance().createAndGetRepo(getRepoID(), time, repoInfo, actor);
+            repository = Database.getInstance().insert(getRepoID(), time, repoInfo, actor);
         }
 
         return repository;
@@ -159,20 +160,20 @@ public class    Event {
         Push push = Parser.parsePush(getPayLoad(), getTime());
         repository.addPush(push);
 
-        Database.getInstance().saveRepositoryToFile(repository);
+        Database.getInstance().insert(repository);
     }
 
     private void handleCreateEvent(){
         CreatePayload create = Parser.parseCreate(getPayLoad());
 
         if (create.getRefType() == CreatePayload.Type.Repository){
-            Database.getInstance().createRepo(getRepoID(), time, repoInfo, actor);
+            Database.getInstance().insert(getRepoID(), time, repoInfo, actor);
         }
         else if (create.getRefType() == CreatePayload.Type.Branch){
             Repository repository = getRepositoryFromDBIfNull();
 
             repository.addBranch(create.getRef());
-            Database.getInstance().saveRepositoryToFile(repository);
+            Database.getInstance().insert(repository);
         }
 
     }
@@ -181,13 +182,13 @@ public class    Event {
         DeletePayload delete = Parser.parseDelete(getPayLoad());
 
         if (delete.getRefType() == DeletePayload.Type.Repository){
-            Database.getInstance().deleteRepo(getRepoID());
+            Database.getInstance().delete(getRepoID());
         }
         else if (delete.getRefType() == DeletePayload.Type.Branch){
             Repository repository = getRepositoryFromDBIfNull();
             repository.removeBranch(delete.getRef());
 
-            Database.getInstance().saveRepositoryToFile(repository);
+            Database.getInstance().insert(repository);
         }
     }
 
@@ -204,7 +205,7 @@ public class    Event {
             repository.closePullRequest(pull.getRequest().id, getTime());
         }
 
-        Database.getInstance().saveRepositoryToFile(repository);
+        Database.getInstance().insert(repository);
     }
 
     private void handleIssuesEvent(){
@@ -218,7 +219,7 @@ public class    Event {
             repository.closeIssue(issue.getIssue().getId(), getTime());
         }
 
-        Database.getInstance().saveRepositoryToFile(repository);
+        Database.getInstance().insert(repository);
     }
 
     private void handleMemberEvent(){
@@ -230,6 +231,6 @@ public class    Event {
             repository.addDev(member.getMember());
         }
 
-        Database.getInstance().saveRepositoryToFile(repository);
+        Database.getInstance().insert(repository);
     }
 }

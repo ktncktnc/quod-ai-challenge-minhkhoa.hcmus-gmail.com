@@ -5,15 +5,37 @@ import ai.quod.challenge.GHArchiver.User;
 import ai.quod.challenge.Utils.FileHandler;
 import com.google.gson.Gson;
 
-import java.io.*;
+import java.sql.*;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 
 public class Database {
     private static Database instance = null;
+    public static String dbName = FileHandler.db_path + "gharchiver.db";
+
+    public static String create_table_sql =
+                        "CREATE TABLE IF NOT EXISTS repositories (\n" +
+                                "id long PRIMARY KEY,\n" +
+                                "repoInfo text NOT NULL\n"
+            +   ");";
+
+    public static String insert_data_sql =
+            "INSERT OR REPLACE INTO repositories(id, content) VALUES(?, ?)";
+
+    public static String select_data_sql =
+            "SELECT id, content FROM repositories WHERE id = ?";
+
+    public static String delete_data_sql =
+            "DELETE FROM repositories where id = ?";
+
     public HashSet<Long> repoIds;
 
-    public static Database getInstance(){
+    public int curFileID;
+    public int curLine;
+    public Connection connection;
+
+     public static Database getInstance(){
         if (instance == null){
             instance = new Database();
         }
@@ -21,76 +43,137 @@ public class Database {
     }
 
     private Database() {
-        repoIds = new HashSet<>();
+         repoIds = new HashSet<>();
+         curFileID = 0;
+         curLine = 0;
+
+        connect();
     }
 
-    public void createRepo(long repoID, LocalDateTime time, RepoInfo info, User actor){
-        Repository repository = new Repository(repoID, time, info, actor);
-        saveRepositoryToFile(repository);
+    public void connect(){
+         try{
+             connection = DriverManager.getConnection("jdbc:sqlite:" + dbName);
+         }
+         catch (SQLException e){
+             e.printStackTrace();
+         }
+         finally {
+             try {
+                 if (connection != null){
+                     Statement statement = connection.createStatement();
 
-        repoIds.add(repoID);
+                     statement.execute(create_table_sql);
+                     connection.setAutoCommit(false);
+
+                 }
+             } catch (SQLException e) {
+                 e.printStackTrace();
+             }
+         }
     }
 
-    public Repository createAndGetRepo(long repoID, LocalDateTime time, RepoInfo info, User actor){
-        Repository repository = new Repository(repoID, time, info, actor);
-        saveRepositoryToFile(repository);
+    public void close(){
+        try {
+            if (connection != null){
+                connection.close();
+                connection = null;
+            }
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
 
-        repoIds.add(repoID);
+    public void commit(){
+        try {
+            connection.commit();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    public void insert(Repository repository){
+        try{
+
+            if (connection != null){
+                PreparedStatement statement = connection.prepareStatement(insert_data_sql);
+
+                Gson gson = new Gson();
+                String content = gson.toJson(repository);
+
+                statement.setLong(1, repository.id);
+                statement.setString(2, content);
+
+                statement.executeUpdate();
+
+                repoIds.add(repository.id);
+            }
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    public Repository insert(long repoID, LocalDateTime time, RepoInfo info, User actor){
+        Repository repository = new Repository(repoID, time, info, actor);
+
+        insert(repository);
+
         return repository;
     }
 
-    public void deleteRepo(long id){
-        String file_name = id + ".json";
-        String file_path = FileHandler.db_path + file_name;
-
-        File file = new File(file_path);
-        try{
-            file.delete();
-            repoIds.remove(id);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-
-    public Repository fromID(long id){
-        if (!repoIds.contains(id)) return null;
-
-        String file_name = id + ".json";
-        String file_path = FileHandler.db_path + file_name;
-
+    public Repository get(long id){
         try {
-            BufferedReader bf = new BufferedReader(new FileReader(file_path));
-            String content = bf.readLine();
+            if (connection == null) connect();
+
+            PreparedStatement statement = connection.prepareStatement(select_data_sql);
+
+            statement.setLong(1, id);
+
+            ResultSet set = statement.executeQuery();
+            if (!set.next()) return null;
 
             Gson gson = new Gson();
-
-            Repository repository = gson.fromJson(content, Repository.class);
+            Repository repository = gson.fromJson(set.getString("content"), Repository.class);
             return repository;
         }
-        catch (Exception e){
+        catch (SQLException e){
             e.printStackTrace();
         }
-        return null;
-    }
 
-    public void saveRepositoryToFile(Repository repository){
-        String file_name = repository.id + ".json";
-        String file_path = FileHandler.db_path + file_name;
-
-        Gson gson = new Gson();
-        String json = gson.toJson(repository);
-
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file_path));
-            writer.write(json);
-            writer.close();
-        }
-        catch (Exception e){
-            e.printStackTrace();;
-        }
+        return  null;
     }
 
 
+
+
+//    public void updateRepo(Repository repository){
+//         try {
+//             Gson gson = new Gson();
+//             String content = gson.toJson(repository);
+//
+//             PreparedStatement pstmt = connection.prepareStatement(update_data_sql);
+//             pstmt.setString(1, content);
+//             pstmt.setLong(2, repository.id);
+//
+//             pstmt.executeUpdate();
+//         }
+//         catch (SQLException e){
+//             e.printStackTrace();
+//         }
+//    }
+
+    public void delete(long id){
+        try{
+            PreparedStatement pstmt = connection.prepareStatement(delete_data_sql);
+            pstmt.setLong(1, id);
+
+            pstmt.executeUpdate();
+
+            repoIds.remove(id);
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
 }

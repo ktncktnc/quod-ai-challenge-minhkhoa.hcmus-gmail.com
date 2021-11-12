@@ -18,7 +18,7 @@ public class PullMetric {
         HashSet<Long> repositories = Database.getInstance().repoIds;
 
         for(Long repoID : repositories){
-            Repository repository = Database.getInstance().fromID(repoID);
+            Repository repository = Database.getInstance().get(repoID);
 
             int totalPull = repository.closedPullRequests.size() + repository.openedPullRequests.size();
             if (totalPull == 0){

@@ -76,7 +76,7 @@ public class FileHandler {
 
                 //Get repo
                 long id = healthScore.id;
-                Repository repository = Database.getInstance().fromID(id);
+                Repository repository = Database.getInstance().get(id);
 
                 //Get org and repo names
                 String name = repository.info.getName();
