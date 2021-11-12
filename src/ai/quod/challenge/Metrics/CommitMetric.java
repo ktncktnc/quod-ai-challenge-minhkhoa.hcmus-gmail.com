@@ -1,13 +1,11 @@
 package ai.quod.challenge.Metrics;
 
-import ai.quod.challenge.GHProject.Database;
+import ai.quod.challenge.Database;
 import ai.quod.challenge.GHProject.Repository;
 import ai.quod.challenge.Utils.Utils;
 
-import javax.rmi.CORBA.Util;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 
 public class CommitMetric {
     public static HashMap<Long, Integer> totalCommits = new HashMap<>();

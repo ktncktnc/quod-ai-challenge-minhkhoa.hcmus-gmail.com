@@ -1,6 +1,6 @@
 package ai.quod.challenge.GHArchiver.payload;
 
-import ai.quod.challenge.GHArchiver.User;
+import ai.quod.challenge.GHProject.User;
 
 import java.util.HashMap;
 

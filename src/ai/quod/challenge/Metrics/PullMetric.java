@@ -1,6 +1,6 @@
 package ai.quod.challenge.Metrics;
 
-import ai.quod.challenge.GHProject.Database;
+import ai.quod.challenge.Database;
 import ai.quod.challenge.GHProject.PullRequest;
 import ai.quod.challenge.GHProject.Repository;
 

@@ -1,11 +1,11 @@
-package ai.quod.challenge.GHArchiver;
+package ai.quod.challenge.GHProject;
 
-public class RepoInfo {
+public class Org {
     long id;
     String name;
     String url;
 
-    public RepoInfo(long id, String name, String url) {
+    public Org(long id, String name, String url) {
         this.id = id;
         this.name = name;
         this.url = url;
@@ -39,7 +39,7 @@ public class RepoInfo {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        RepoInfo that = (RepoInfo) obj;
+        Org that = (Org) obj;
         return id == that.id;
     }
 

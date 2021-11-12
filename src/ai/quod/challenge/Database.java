@@ -1,7 +1,8 @@
-package ai.quod.challenge.GHProject;
+package ai.quod.challenge;
 
-import ai.quod.challenge.GHArchiver.RepoInfo;
-import ai.quod.challenge.GHArchiver.User;
+import ai.quod.challenge.GHProject.Org;
+import ai.quod.challenge.GHProject.Repository;
+import ai.quod.challenge.GHProject.User;
 import ai.quod.challenge.Utils.FileHandler;
 import com.google.gson.Gson;
 
@@ -12,12 +13,12 @@ import java.util.HashSet;
 
 public class Database {
     private static Database instance = null;
-    public static String dbName = FileHandler.db_path + "gharchiver.db";
+    public static String dbName = FileHandler.db_path + "main.db";
 
     public static String create_table_sql =
                         "CREATE TABLE IF NOT EXISTS repositories (\n" +
                                 "id long PRIMARY KEY,\n" +
-                                "repoInfo text NOT NULL\n"
+                                "content text NOT NULL\n"
             +   ");";
 
     public static String insert_data_sql =
@@ -114,7 +115,7 @@ public class Database {
         }
     }
 
-    public Repository insert(long repoID, LocalDateTime time, RepoInfo info, User actor){
+    public Repository insert(long repoID, LocalDateTime time, Org info, User actor){
         Repository repository = new Repository(repoID, time, info, actor);
 
         insert(repository);

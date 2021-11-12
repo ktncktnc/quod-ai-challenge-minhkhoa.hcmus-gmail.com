@@ -1,9 +1,7 @@
 package ai.quod.challenge.Metrics;
 
 import ai.quod.challenge.GHArchiver.HealthScore;
-import ai.quod.challenge.GHProject.Database;
-import ai.quod.challenge.GHProject.Repository;
-
+import ai.quod.challenge.Database;
 import java.util.*;
 
 public class HealthMetrics {
@@ -13,10 +11,11 @@ public class HealthMetrics {
         HashSet<Long> repositories = Database.getInstance().repoIds;
 
         for(Long repoID : repositories){
-            Repository repository = Database.getInstance().get(repoID);
-
+            //Commit rate
             float commitsPerDay = CommitMetric.commitsPerDay.get(repoID)/CommitMetric.maxCommitsPerDay;
             float commitsPerDev = CommitMetric.commitsPerDev.get(repoID)/CommitMetric.maxCommitsPerDev;
+
+            //Time rate
             float averageMergedTime = PullMetric.pullScores.get(repoID);
             float averageClosedTime = IssueMetric.issueScores.get(repoID);
 
@@ -25,6 +24,7 @@ public class HealthMetrics {
         }
     }
 
+    //Sort health scores list
     public static ArrayList<HealthScore> sortToList(){
         ArrayList<HealthScore> result = new ArrayList<>(healthScores.values());
         Collections.sort(result, Collections.reverseOrder());

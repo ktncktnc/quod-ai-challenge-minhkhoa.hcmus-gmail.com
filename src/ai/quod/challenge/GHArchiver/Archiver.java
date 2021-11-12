@@ -1,11 +1,10 @@
 package ai.quod.challenge.GHArchiver;
 
-import ai.quod.challenge.GHProject.Database;
+import ai.quod.challenge.Database;
 import ai.quod.challenge.Utils.Parser;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.stream.Stream;
 
@@ -28,7 +27,6 @@ public class Archiver {
         Event event = Parser.parse(line);
         event.handle();
         put(event);
-        System.out.println("done");
     }
 
     public void fromFile(String jsonPath){

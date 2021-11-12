@@ -21,6 +21,7 @@ public class Utils {
     public static final float EPSILON = 0.00001f;
 
     /**
+     * Download file from url and save to path
      * @param urlStr: url of file
      * @param path: path to save
      * @return:
@@ -42,6 +43,7 @@ public class Utils {
     }
 
     /**
+     * Get file name from url string
      * @param url: url of gz file
      * @return: String: filename
      */
@@ -52,8 +54,8 @@ public class Utils {
         return url.substring(index + 1);
     }
 
-
     /**
+     * Unzip a file and save to target path
      * @param sourceStr: path of source file (.gz)
      * @param targetStr: path of destination file (.json)
      */
@@ -79,6 +81,7 @@ public class Utils {
 
 
     /**
+     * Parse string to LocalDateTime
      * @param time: ISO 8601 time string
      * @return: LocalDateTime: day time
      */
@@ -90,6 +93,13 @@ public class Utils {
         return date;
     }
 
+
+    /**
+     * Create an array of file name string from 2 LocalDateTime
+     * @param start: start time
+     * @param end: end time
+     * @return: list of filename
+     */
     public static ArrayList<String> fileNamesFromTimeRange(LocalDateTime start, LocalDateTime end){
         ArrayList<String> fileNames = new ArrayList<>();
 
@@ -108,6 +118,11 @@ public class Utils {
         return fileNames;
     }
 
+    /**
+     * get organization name from repo name
+     * @param repo
+     * @return
+     */
     public static String orgNameFromRepoName(String repo){
         int index = repo.indexOf("/");
         return repo.substring(0, index);

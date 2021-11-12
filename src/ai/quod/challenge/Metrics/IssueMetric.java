@@ -1,8 +1,7 @@
 package ai.quod.challenge.Metrics;
 
-import ai.quod.challenge.GHProject.Database;
+import ai.quod.challenge.Database;
 import ai.quod.challenge.GHProject.Issue;
-import ai.quod.challenge.GHProject.PullRequest;
 import ai.quod.challenge.GHProject.Repository;
 
 import java.time.Duration;
@@ -32,19 +31,23 @@ public class IssueMetric {
 
             long totalTime = 0;
 
+            //Cal totalTime
             for(Map.Entry<Long, Issue> issueEntry : repository.closedIssues.entrySet()){
                 Issue issue = issueEntry.getValue();
                 totalTime += Duration.between(issue.getCreatedAt(), issue.getClosedAt()).getSeconds();
             }
 
+            //Average time
             float time = (float)totalTime/(float)totalPull;
 
+            //Get min, max time
             if (time > 0f){
                 if (time < minimumClosedTime)
                     minimumClosedTime = time;
                 else if (time > maximumClosedTime)
                     maximumClosedTime = time;
             }
+
             averageClosedTime.put(repoID, time);
         }
 

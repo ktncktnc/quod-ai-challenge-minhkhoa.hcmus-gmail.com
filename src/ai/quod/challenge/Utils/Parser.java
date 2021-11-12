@@ -1,8 +1,8 @@
 package ai.quod.challenge.Utils;
 
 import ai.quod.challenge.GHArchiver.Event;
-import ai.quod.challenge.GHArchiver.RepoInfo;
-import ai.quod.challenge.GHArchiver.User;
+import ai.quod.challenge.GHProject.Org;
+import ai.quod.challenge.GHProject.User;
 import ai.quod.challenge.GHArchiver.payload.*;
 import ai.quod.challenge.GHProject.Issue;
 import ai.quod.challenge.GHProject.PullRequest;
@@ -16,6 +16,7 @@ import java.util.ArrayList;
 
 public class Parser {
 
+    //Parse json to event data
     public static Event parse(String data){
         JSONObject jsonObject = new JSONObject(data);
 
@@ -33,9 +34,9 @@ public class Parser {
         JSONObject payloadJson = jsonObject.getJSONObject("payload");
 
         User actor = parseActor(actorJson);
-        RepoInfo repoInfo = parseRepo(repoJson);
+        Org org = parseRepo(repoJson);
 
-        return new Event(id, type, actor, repoInfo, payloadJson, isPublic, createdAt);
+        return new Event(id, type, actor, org, payloadJson, isPublic, createdAt);
     }
 
     public static User parseActor(JSONObject data){
@@ -45,12 +46,12 @@ public class Parser {
         return new User(id, username);
     }
 
-    public static RepoInfo parseRepo(JSONObject data){
+    public static Org parseRepo(JSONObject data){
         long id = data.getLong("id");
         String name = data.getString("name");
         String url = data.getString("url");
 
-        return new RepoInfo(id, name, url);
+        return new Org(id, name, url);
     }
 
     //Push-------------
@@ -79,7 +80,7 @@ public class Parser {
         return new Commit(sha, message);
     }
 
-//    //Create------------
+    //Create------------
 
     public static CreatePayload parseCreate(JSONObject payload){
         String ref = null;
@@ -92,7 +93,7 @@ public class Parser {
         return new CreatePayload(ref, type, masterBranch);
     }
 
-    //Create------------
+    //Delete------------
 
     public static DeletePayload parseDelete(JSONObject payload){
         String ref = payload.getString("ref");

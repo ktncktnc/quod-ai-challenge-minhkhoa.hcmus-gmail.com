@@ -1,16 +1,13 @@
 package ai.quod.challenge.Utils;
 
 import ai.quod.challenge.GHArchiver.HealthScore;
-import ai.quod.challenge.GHProject.Database;
+import ai.quod.challenge.Database;
 import ai.quod.challenge.GHProject.Repository;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class FileHandler {
@@ -24,6 +21,7 @@ public class FileHandler {
 
     public static final String fileName_format = "%04d-%02d-%02d-%d";
 
+    //Download, save and unzip data
     public static ArrayList<String> processInputFiles(ArrayList<String> fileNames){
         ArrayList<String> jsonFiles = new ArrayList<>();
         for(String fileName : fileNames){
@@ -54,6 +52,7 @@ public class FileHandler {
         return jsonFiles;
     }
 
+    //Save result to csv file
     public static void scoresToCsv(List<HealthScore> scores, String filePath) {
         try {
             File file = new File(filePath);

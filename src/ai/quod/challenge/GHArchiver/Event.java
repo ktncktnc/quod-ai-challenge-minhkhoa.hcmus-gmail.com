@@ -1,17 +1,15 @@
 package ai.quod.challenge.GHArchiver;
 
+import ai.quod.challenge.Database;
 import ai.quod.challenge.GHArchiver.payload.*;
-import ai.quod.challenge.GHProject.Database;
-import ai.quod.challenge.GHProject.PullRequest;
-import ai.quod.challenge.GHProject.Push;
-import ai.quod.challenge.GHProject.Repository;
+import ai.quod.challenge.GHProject.*;
 import ai.quod.challenge.Utils.Parser;
 import org.json.JSONObject;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 
-public class    Event {
+public class Event {
     public enum Type {
         PushEvent, CreateEvent, DeleteEvent, PullRequestEvent, IssuesEvent, WatchEvent, ForkEvent,
         PullRequestReviewCommentEvent, PullRequestReviewEvent, IssueCommentEvent, GollumEvent, ReleaseEvent,
@@ -43,16 +41,16 @@ public class    Event {
     long id;
     Type type;
     User actor;
-    RepoInfo repoInfo;
+    Org org;
     JSONObject payLoad;
     Boolean isPublic;
     LocalDateTime time;
 
-    public Event(long id, Type type, User actor, RepoInfo repoInfo, JSONObject payLoad, Boolean isPublic, LocalDateTime time) {
+    public Event(long id, Type type, User actor, Org org, JSONObject payLoad, Boolean isPublic, LocalDateTime time) {
         this.id = id;
         this.type = type;
         this.actor = actor;
-        this.repoInfo = repoInfo;
+        this.org = org;
         this.payLoad = payLoad;
         this.isPublic = isPublic;
         this.time = time;
@@ -82,16 +80,16 @@ public class    Event {
         this.type = type;
     }
 
-    public RepoInfo getRepo() {
-        return repoInfo;
+    public Org getRepo() {
+        return org;
     }
 
-    public void setRepo(RepoInfo repoInfo) {
-        this.repoInfo = repoInfo;
+    public void setRepo(Org org) {
+        this.org = org;
     }
 
     public long getRepoID(){
-        return this.repoInfo.getId();
+        return this.org.getId();
     }
 
     public JSONObject getPayLoad() {
@@ -148,7 +146,7 @@ public class    Event {
         Repository repository = database.get(repoID);
 
         if (repository == null){
-            repository = Database.getInstance().insert(getRepoID(), time, repoInfo, actor);
+            repository = Database.getInstance().insert(getRepoID(), time, org, actor);
         }
 
         return repository;
@@ -167,7 +165,7 @@ public class    Event {
         CreatePayload create = Parser.parseCreate(getPayLoad());
 
         if (create.getRefType() == CreatePayload.Type.Repository){
-            Database.getInstance().insert(getRepoID(), time, repoInfo, actor);
+            Database.getInstance().insert(getRepoID(), time, org, actor);
         }
         else if (create.getRefType() == CreatePayload.Type.Branch){
             Repository repository = getRepositoryFromDBIfNull();
