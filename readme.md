@@ -6,8 +6,10 @@ While developing project, I used some external libraries, include:
 - `sqlite`: a simple database store data.
 
 ## Compile and run
-gradle run
-gradle run --args="2019-10-10T00:00:00Z 2020-10-11T03:00:00Z"
+- `git clone https://github.com/ktncktnc/quodai`
+- `cd quodai`
+- Check health score last hour: `gradle run`
+- Check health score in a range: `gradle run --args="2021-11-12T00:00:00Z 2021-11-13T06:00:00Z"`
 
 ## Technical decisions
 ### What frameworks/libraries did you use? What are the benefits of those libraries?
