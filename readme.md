@@ -6,8 +6,8 @@ While developing project, I used some external libraries, include:
 - `sqlite`: a simple database store data.
 
 ## Compile and run
-- `git clone https://github.com/ktncktnc/quodai`
-- `cd quodai`
+- `git clone https://github.com/ktncktnc/quod-ai-challenge-minhkhoa.hcmus-gmail.com`
+- `cd quod-ai-challenge-minhkhoa.hcmus@gmail.com`
 - Check health score last hour: `gradle run`
 - Check health score in a range: `gradle run --args="2021-11-12T00:00:00Z 2021-11-13T06:00:00Z"`
 
